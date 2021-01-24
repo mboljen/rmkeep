@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+#
+# Created:         Mi 2021-01-06 17:47:34 CET
+# Last Modified:   So 2021-01-24 19:05:57 CET
+#
+# rmkeep:
+#   Keeps a number of files matching a certain pattern and removes the rest.
+
+# Help text
+usage() {
+cat << EOF
+
+Usage: rmkeep [options] <pattern>
+
+OPTIONS:
+   -d <path>    Change working directory
+   -k <number>  Files to keep (default: 0 = all)
+   -r           Reverse sort
+   -n           Dry run
+   -v           Verbose output
+   -h           Show this help message
+EOF
+}
+
+
+set -e
+
+# Initialization
+DIR=$(pwd)
+KEEP=0
+REVERSE=
+DRYRUN=0
+VERBOSE=0
+
+# Process options
+while getopts "d:k:nrvh" OPTION
+do
+    case "$OPTION"
+    in
+        d)  DIR="$OPTARG"
+            ;;
+        k)  KEEP="$OPTARG"
+            ;;
+        n)  DRYRUN=1
+            ;;
+        r)  REVERSE='--reverse'
+            ;;
+        v)  VERBOSE=1
+            ;;
+        h|\?)  usage
+            exit 0
+            ;;
+    esac
+done
+
+# Welcome message
+if [ $VERBOSE -eq 1 ]
+then
+    echo
+    printf "This is RMKEEP, keep and remove filenames matching a regex pattern\n"
+    printf "Last modified 2021/01/24\n\n"
+fi
+
+# Skip options and shift index
+shift $((OPTIND-1))
+
+# Check number of parameters
+if [ $# -ne 1 ]
+then
+    echo "Illegal number of parameters"
+    usage
+    exit 1
+fi
+
+# Check number of files to keep
+if [ "${KEEP}" -lt 0 ]
+then
+    echo "Illegal number of files"
+    usage
+    exit 1
+fi
+
+# Get arguments
+REGEX=$1
+
+# Check if directory exists
+if [ ! -d "${DIR}" ]
+then
+    echo "Cannot change to ${DIR}"
+    usage
+    exit 1
+fi
+
+# Change to working directory
+cd "${DIR}"
+
+# Create temporary file
+TEMPNAME=$(mktemp -t "$0-XXXXXX")
+
+# Find files matching pattern
+for f in $(find . -maxdepth 1 -type f | sort ${REVERSE})
+do
+    fname=$(basename "${f}")
+    [[ ${fname} =~ ${REGEX} ]] && echo "${fname}" >> "${TEMPNAME}"
+done
+
+# Get number of matches
+LINES=$(awk 'END{ print NR }' "${TEMPNAME}")
+
+# Removing files exceeding limit
+KBYTE=0
+NUM=0
+if [ "${KEEP}" -gt 0 ]
+then
+    for f in $(tail -n +$((KEEP+1)) "${TEMPNAME}")
+    do
+        FSIZE=$(du -k "${f}" | cut -f 1)
+        [[ ${VERBOSE} -eq 1 ]] && echo -n "Removing ${f} ... "
+        if [ ${DRYRUN} -eq 1 ]
+        then
+            [[ ${VERBOSE} -eq 1 ]] && echo "(DRYRUN)"
+        else
+            rm "${f}"
+            [[ ${VERBOSE} -eq 1 ]] && echo "done"
+        fi
+        NUM=$((NUM+1))
+        KBYTE=$((KBYTE+FSIZE))
+    done
+    [[ ${VERBOSE} -eq 1 ]] && [[ $NUM -gt 0 ]] && echo
+    if [ ${DRYRUN} -eq 1 ]
+    then
+        echo -e "${NUM}/${LINES} files marked for deletion (${KBYTE} kB)"
+    else
+        echo -e "${NUM}/${LINES} files removed (${KBYTE} kB)"
+    fi
+else
+    cat "${TEMPNAME}"
+fi
+
+# Remove temporary file
+rm -f "${TEMPNAME}"
