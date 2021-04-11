@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Created:         Mi 2021-01-06 17:47:34 CET
-# Last Modified:   So 2021-01-24 19:05:57 CET
+# Last Modified:   So 2021-04-11 20:15:04 CEST
 #
 # rmkeep:
 #   Keeps a number of files matching a certain pattern and removes the rest.
@@ -13,7 +13,7 @@ cat << EOF
 Usage: rmkeep [options] <pattern>
 
 OPTIONS:
-   -d <path>    Change working directory
+   -p <path>    Change working directory
    -k <number>  Files to keep (default: 0 = all)
    -r           Reverse sort
    -n           Dry run
@@ -33,11 +33,11 @@ DRYRUN=0
 VERBOSE=0
 
 # Process options
-while getopts "d:k:nrvh" OPTION
+while getopts "p:k:nrvh" OPTION
 do
     case "$OPTION"
     in
-        d)  DIR="$OPTARG"
+        p)  DIR="$OPTARG"
             ;;
         k)  KEEP="$OPTARG"
             ;;
@@ -58,7 +58,7 @@ if [ $VERBOSE -eq 1 ]
 then
     echo
     printf "This is RMKEEP, keep and remove filenames matching a regex pattern\n"
-    printf "Last modified 2021/01/24\n\n"
+    printf "Last modified 2021/04/11\n\n"
 fi
 
 # Skip options and shift index
@@ -95,7 +95,7 @@ fi
 cd "${DIR}"
 
 # Create temporary file
-TEMPNAME=$(mktemp -t "$0-XXXXXX")
+TEMPNAME=$(mktemp -t "$(basename "$0")-XXXXXX")
 
 # Find files matching pattern
 for f in $(find . -maxdepth 1 -type f | sort ${REVERSE})

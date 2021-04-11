@@ -18,12 +18,12 @@ The default `PREFIX` is set to `/usr/local`.  In order to succesfully complete t
 The following command will keep `number` files matching the pattern `REGEX` and remove the rest.
 
 ```bash
-$ rmkeep [-d path] [-k number] [-r] [-n] [-v] [-h] REGEX
+$ rmkeep [-p path] [-k number] [-r] [-n] [-v] [-h] REGEX
 ```
 
 ### Options
 
-+ `-d` Change working directory
++ `-p` Change working directory
 + `-k` Files to keep (default: `0` = all)
 + `-r` Reverse sort
 + `-n` Dry run
