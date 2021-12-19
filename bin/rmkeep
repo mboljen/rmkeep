@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Created:         Mi 2021-01-06 17:47:34 CET
-# Last Modified:   Fr 2021-08-06 16:02:13 CEST
+# Last Modified:   So 2021-12-19 13:23:11 CET
 #
 # rmkeep:
 #   Keeps a number of files matching a certain pattern and removes the rest.
@@ -13,7 +13,7 @@ cat << EOF
 Usage: rmkeep [options] <pattern>
 
 OPTIONS:
-   -p <path>    Change working directory
+   -p <path>    Change directory (default: current working directory)
    -k <number>  Files to keep (default: 0 = all)
    -r           Reverse sort
    -n           Dry run
@@ -22,7 +22,7 @@ OPTIONS:
 EOF
 }
 
-
+#
 set -e
 
 # Initialization
@@ -30,7 +30,6 @@ DIR=$(pwd)
 KEEP=0
 REVERSE=
 DRYRUN=0
-VERBOSE=0
 QUIET=0
 
 # Process options
@@ -55,34 +54,20 @@ do
 done
 
 # Welcome message
-if [ $QUIET -ne 1 ]
+if [ "$QUIET" -ne 1 ]
 then
     echo
     printf "This is RMKEEP, keep and remove filenames matching a regex pattern\n"
     printf "Last modified 2021/12/19\n\n"
 fi
 
-# Skip options and shift index
-shift $((OPTIND-1))
-
-# Check number of parameters
-if [ $# -ne 1 ]
-then
-    echo "Illegal number of parameters"
-    usage
-    exit 1
-fi
-
 # Check number of files to keep
 if [ "$KEEP" -lt 0 ]
 then
-    echo "Illegal number of files"
+    echo "Invalid number of files"
     usage
     exit 1
 fi
-
-# Get arguments
-REGEX=$1
 
 # Check if directory exists
 if [ ! -d "$DIR" ]
@@ -90,6 +75,24 @@ then
     echo "Cannot change to $DIR"
     usage
     exit 1
+fi
+
+# Skip options and shift index
+shift $((OPTIND-1))
+
+# Check number of parameters
+if [ $# -gt 1 ]
+then
+    echo "Invalid number of parameters"
+    usage
+    exit 1
+elif [ $# -eq 1 ]
+then
+    # Get argument
+    REGEX=$1
+else
+    # No regex
+    REGEX=
 fi
 
 # Change to working directory
@@ -102,7 +105,10 @@ TEMPNAME=$(mktemp -t "$(basename "$0")-XXXXXX")
 for f in $(find . -maxdepth 1 -type f | sort $REVERSE)
 do
     fname=$(basename "$f")
-    [[ $fname =~ $REGEX ]] && echo "$fname" >> "$TEMPNAME"
+    if [ -z "$REGEX" ] || [[ $fname =~ $REGEX ]]
+    then
+        echo "$fname" >> "$TEMPNAME"
+    fi
 done
 
 # Get number of matches
@@ -117,12 +123,12 @@ then
     do
         FSIZE=$(du -k "$f" | cut -f 1)
         [ "$QUIET" -ne 1 ] && echo -n "Removing $f ... "
-        if [ $DRYRUN -eq 1 ]
+        if [ "$DRYRUN" -eq 1 ]
         then
-            [ "$VERBOSE" -eq 1 ] && echo "(DRYRUN)"
+            [ "$QUIET" -ne 1 ] && echo "(DRYRUN)"
         else
             rm "$f"
-            [ "$VERBOSE" -eq 1 ] && echo "done"
+            [ "$QUIET" -eq 1 ] && echo "done"
         fi
         NUM=$((NUM+1))
         KBYTE=$((KBYTE+FSIZE))
@@ -130,7 +136,7 @@ then
     if [ "$QUIET" -ne 1 ]
     then
         [ "$NUM" -gt 0 ] && echo
-        if [ $DRYRUN -eq 1 ]
+        if [ "$DRYRUN" -eq 1 ]
         then
             echo -e "$NUM/$LINES files marked for deletion ($KBYTE kB)"
         else
