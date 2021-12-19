@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Created:         Mi 2021-01-06 17:47:34 CET
-# Last Modified:   So 2021-12-19 13:08:24 CET
+# Last Modified:   So 2021-12-19 13:13:37 CET
 #
 # rmkeep:
 #   Keeps a number of files matching a certain pattern and removes the rest.
@@ -33,7 +33,7 @@ DRYRUN=0
 QUIET=0
 
 # Process options
-while getopts "p:k:nrvh" OPTION
+while getopts "p:k:nrqh" OPTION
 do
     case "$OPTION"
     in
@@ -54,7 +54,7 @@ do
 done
 
 # Welcome message
-if [ $VERBOSE -eq 1 ]
+if [ "$QUIET" -ne 1 ]
 then
     echo
     printf "This is RMKEEP, keep and remove filenames matching a regex pattern\n"
