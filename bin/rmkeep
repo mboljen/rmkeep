@@ -128,7 +128,7 @@ then
             [ "$QUIET" -ne 1 ] && echo "(DRYRUN)"
         else
             rm "$f"
-            [ "$QUIET" -eq 1 ] && echo "done"
+            [ "$QUIET" -ne 1 ] && echo "done"
         fi
         NUM=$((NUM+1))
         KBYTE=$((KBYTE+FSIZE))
