@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Created:         Mi 2021-01-06 17:47:34 CET
-# Last Modified:   So 2021-12-19 13:23:11 CET
+# Last Modified:   Mi 2024-06-19 19:10:08 CEST
 #
 # rmkeep:
 #   Keeps a number of files matching a certain pattern and removes the rest.
@@ -17,7 +17,6 @@ OPTIONS:
    -k <number>  Files to keep (default: 0 = all)
    -r           Reverse sort
    -n           Dry run
-   -q           Be quiet
    -h           Show this help message
 EOF
 }
@@ -30,10 +29,9 @@ DIR=$(pwd)
 KEEP=0
 REVERSE=
 DRYRUN=0
-QUIET=0
 
 # Process options
-while getopts "p:k:nrqh" OPTION
+while getopts "p:k:nrh" OPTION
 do
     case "$OPTION"
     in
@@ -45,8 +43,6 @@ do
             ;;
         r)  REVERSE='--reverse'
             ;;
-        q)  QUIET=1
-            ;;
         h|\?)  usage
             exit 0
             ;;
@@ -54,12 +50,9 @@ do
 done
 
 # Welcome message
-if [ "$QUIET" -ne 1 ]
-then
-    echo
-    printf "This is RMKEEP, keep and remove filenames matching a regex pattern\n"
-    printf "Last modified 2021/12/19\n\n"
-fi
+echo
+printf "This is RMKEEP, keep and remove filenames matching a regex pattern\n"
+printf "Last modified 2024/06/19\n\n"
 
 # Check number of files to keep
 if [ "$KEEP" -lt 0 ]
@@ -112,7 +105,7 @@ do
 done
 
 # Get number of matches
-LINES=$(awk 'END{ print NR }' "$TEMPNAME")
+LINES=$(awk 'END { print NR }' "$TEMPNAME")
 
 # Removing files exceeding limit
 KBYTE=0
@@ -122,26 +115,23 @@ then
     for f in $(tail -n +$((KEEP+1)) "$TEMPNAME")
     do
         FSIZE=$(du -k "$f" | cut -f 1)
-        [ "$QUIET" -ne 1 ] && echo -n "Removing $f ... "
+        echo -n "Removing $f ... "
         if [ "$DRYRUN" -eq 1 ]
         then
-            [ "$QUIET" -ne 1 ] && echo "(DRYRUN)"
+            echo "(DRYRUN)"
         else
-            rm "$f"
-            [ "$QUIET" -ne 1 ] && echo "done"
+            rm -f "$f"
+            echo "done"
         fi
-        NUM=$((NUM+1))
-        KBYTE=$((KBYTE+FSIZE))
+        ((NUM++))
+        ((KBYTE+=FSIZE))
     done
-    if [ "$QUIET" -ne 1 ]
+    [ "$NUM" -gt 0 ] && echo
+    if [ "$DRYRUN" -eq 1 ]
     then
-        [ "$NUM" -gt 0 ] && echo
-        if [ "$DRYRUN" -eq 1 ]
-        then
-            echo -e "$NUM/$LINES files marked for deletion ($KBYTE kB)"
-        else
-            echo -e "$NUM/$LINES files removed ($KBYTE kB)"
-        fi
+        echo -e "$NUM/$LINES files marked for deletion ($KBYTE kB)"
+    else
+        echo -e "$NUM/$LINES files removed ($KBYTE kB)"
     fi
 else
     cat "$TEMPNAME"

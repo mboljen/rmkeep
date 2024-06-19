@@ -5,7 +5,7 @@ rmkeep - Keep a number files matching a certain pattern and remove the rest.
 
 # SYNOPSIS
 
-**rmkeep** [ **-p** _path_ ] [ **-k** _num_ ] [ **-r** ] [ **-n** ] [ **-q** ] [ _REGEX_ ]
+**rmkeep** [ **-p** _path_ ] [ **-k** _num_ ] [ **-r** ] [ **-n** ] [ _REGEX_ ]
 
 
 # DESCRIPTION
@@ -26,9 +26,6 @@ This command will keep a certain number of files matching the regular expression
 
 **-n**
 : perform dry run only.
-
-**-q**
-: be quiet.
 
 **-h**
 : show this help message.
