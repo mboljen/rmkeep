@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Created:         Mi 2021-01-06 17:47:34 CET
-# Last Modified:   Mi 2024-06-19 19:10:08 CEST
+# Last Modified:   Do 2024-06-20 09:18:39 CEST
 #
 # rmkeep:
 #   Keeps a number of files matching a certain pattern and removes the rest.
@@ -104,34 +104,39 @@ do
     fi
 done
 
-# Get number of matches
-LINES=$(awk 'END { print NR }' "$TEMPNAME")
-
 # Removing files exceeding limit
-KBYTE=0
-NUM=0
 if [ "$KEEP" -gt 0 ]
 then
-    for f in $(tail -n +$((KEEP+1)) "$TEMPNAME")
+    # Get number of matches
+    lines=$(awk 'END { print NR }' "$TEMPNAME")
+    # Init counters
+    kbyte=0
+    num=0
+    # Loop over deprecated files
+    while read -r fname
     do
-        FSIZE=$(du -k "$f" | cut -f 1)
-        echo -n "Removing $f ... "
+        # Get file size
+        fsize=$(du -k "$fname" | cut -f 1)
+        # Increment counters
+        ((num+=1))
+        ((kbyte+=fsize))
+        # Physically remove file
+        echo -n "Removing $fname ... "
         if [ "$DRYRUN" -eq 1 ]
         then
             echo "(DRYRUN)"
         else
-            rm -f "$f"
+            rm -f "$fname"
             echo "done"
         fi
-        ((NUM++))
-        ((KBYTE+=FSIZE))
-    done
-    [ "$NUM" -gt 0 ] && echo
+    done < <(tail -n +$((KEEP+1)) "$TEMPNAME")
+    # Print summary
+    [ "$num" -gt 0 ] && echo
     if [ "$DRYRUN" -eq 1 ]
     then
-        echo -e "$NUM/$LINES files marked for deletion ($KBYTE kB)"
+        echo -e "$num/$lines files marked for deletion ($kbyte kB)"
     else
-        echo -e "$NUM/$LINES files removed ($KBYTE kB)"
+        echo -e "$num/$lines files removed ($kbyte kB)"
     fi
 else
     cat "$TEMPNAME"
