@@ -1,6 +1,11 @@
 # rmkeep
 
-Keep a number files matching a certain pattern and remove the rest.
+Keep a number files matching a certain pattern and remove the rest
+
+
+## Description
+
+This script keeps a certain number of files matching the regular expression _REGEX_ and removes the rest.  If no specific _path_ is defined, the current working directory will be searched.  If no regular expression _REGEX_ is submitted, all files will be matched.
 
 
 ## Synopsis
@@ -8,11 +13,6 @@ Keep a number files matching a certain pattern and remove the rest.
 ```console
 $ rmkeep [OPTION]... [REGEX]
 ```
-
-
-## Description
-
-This command will keep a certain number of files matching the regular expression _REGEX_ and remove the rest.  If no specific _path_ is defined, the current working directory will be searched.  If no regular expression _REGEX_ is submitted, all files will be matched.
 
 
 ## Options
