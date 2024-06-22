@@ -15,20 +15,25 @@ This command will keep a certain number of files matching the regular expression
 
 # OPTIONS
 
-**-p** _path_
-: change working directory.
+- **-p** _path_
 
-**-k** _num_
-: change number of files to keep (default: 0, i.e. all files will be kept).
+  Change working directory
 
-**-r**
-: reverse sort order.
+- **-k** _num_
 
-**-n**
-: perform dry run only.
+  Change number of files to keep (default: 0, i.e. all files will be kept)
 
-**-h**
-: show this help message.
+- **-r**
+
+  Reverse sort order
+
+- **-n**
+
+  Perform dry run only
+
+- **-h**
+
+  Show this help message
 
 
 # INSTALLATION
