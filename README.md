@@ -1,42 +1,40 @@
-# NAME
+# rmkeep
 
-rmkeep - Keep a number files matching a certain pattern and remove the rest
+Keep a number files matching a certain pattern and remove the rest
 
+## Synopsis
 
-# SYNOPSIS
+```console
+$ rmkeep [OPTION]... [REGEX]
+```
 
-**rmkeep** [OPTION]... [REGEX]
-
-
-# DESCRIPTION
+## Description
 
 This script keeps a certain number of files matching the regular expression _REGEX_ and removes the rest.  If no specific _path_ is defined, the current working directory will be searched.  If no regular expression _REGEX_ is submitted, all files will be matched.
 
+## Options
 
-# OPTIONS
++ `-p` _path_
 
-**-p** _path_
+  Changes working directory
 
-: Change working directory
++ `-k` _num_
 
-**-k** _num_
+  Changes number of files to keep (default: 0, i.e. all files will be kept)
 
-: Change number of files to keep (default: 0, i.e. all files will be kept)
++ `-r`
 
-**-r**
+  Reverses sort order
 
-: Reverse sort order
++ `-n`
 
-**-n**
+  Performs dry run only
 
-: Perform dry run only
++ `-h`
 
-**-h**
+  Shows this help message
 
-: Show this help message
-
-
-# INSTALLATION
+## Installation
 
 Clone the remote repository and change into the local repository:
 
@@ -54,14 +52,12 @@ $ make install
 
 The default `PREFIX` is set to `/usr/local`.  In order to successfully complete the installation, you need to have write permissions for the installation location.
 
-
-# CONTRIBUTION
+## Contribution
 
 Pull requests are welcome.  For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
-
-# LICENSE
+## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
