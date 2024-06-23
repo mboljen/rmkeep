@@ -32,7 +32,7 @@ man:
 	mkdir -p $(MAN_DIR)
 
 $(MAN): README.md man
-	pandoc -s -M "title=$(NAME)($(MAN_SECTION))" -M "date=$(shell date "+%a %F %R %Z")" -t man $< | gzip -9 > $(MAN)
+	pandoc -s -M "title=$(shell echo $(NAME) | tr a-z A-Z)($(MAN_SECTION))" -M "date=$(shell date "+%a %F %R %Z")" -f markdown -t man $< | gzip -9 > $(MAN)
 
 sign: $(SIG)
 
