@@ -32,7 +32,7 @@ man:
 	mkdir -p $(MAN_DIR)
 
 $(MAN): man
-	help2man --name=$(NAME) \
+	help2man --name="$(shell bin/$(NAME) -h 2>&1 | head -n 1)" \
 		 --no-discard-stderr \
 		 --help-option=-h \
 		 --version-string=$(VERSION) \
@@ -44,7 +44,7 @@ $(SIG): $(PKG)
 	gpg --sign --detach-sign --armor $(PKG)
 
 clean:
-	rm -f $(MAN) $(PKG) $(SIG)
+	$(RM) $(MAN) $(PKG) $(SIG)
 
 veryclean: clean
 	$(RM) -r -d $(MAN_DIR)

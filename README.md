@@ -16,23 +16,24 @@ This script keeps a certain number of files matching the regular expression _REG
 
 + `-p` _path_
 
-  Changes working directory
+  Change working directory
 
 + `-k` _num_
 
-  Changes number of files to keep (default: 0, i.e. all files will be kept)
+  Change number of files to keep (default: 0, i.e. all files will be kept)
 
 + `-r`
 
-  Reverses sort order
+  Reverse sort order
 
 + `-n`
 
-  Performs dry run only
+  Perform dry run only
 
 + `-h`
 
-  Shows this help message
+  Show this help message
+
 
 ## Installation
 
